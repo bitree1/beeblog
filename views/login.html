@@ -1,0 +1,93 @@
+{{template "header" .}}
+<meta name="keywords" content="云悦,个人随笔,博客,个人博客,个人笔记,技术博客,免费云笔记,云笔记,随笔,IT博客,谷歌地图,码农笔录,aiprose">
+<title>登录 - 云悦</title>
+<link type="text/css" rel="styleSheet" href="/static/css/login.css"/>
+</head>
+<body>
+<div class="root-container">
+{{template "nav" .}}
+    <div class="login-root">
+        <div class="input-container">
+            <div class="input-root">
+                <p>登录</p>
+                <div class="inputs-class">
+                    <div class="input-group input-group-lg input-class">
+                        <span class="input-group-addon" id="sizing-addon1">用户</span>
+                        <input type="text" class="form-control" placeholder="请输入用户名" aria-describedby="sizing-addon1"
+                               id="username">
+                    </div>
+                    <div class="input-group input-group-lg input-class">
+                        <span class="input-group-addon" id="sizing-addon1">密码</span>
+                        <input type="password" class="form-control" placeholder="请输入密码" aria-describedby="sizing-addon1"
+                               id="userpwd">
+                    </div>
+                    <button type="button" class="btn btn-primary btn-lg btn-bordered btn-block" id="loginBtn">登录
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="login-footer">
+        {{template "footer"}}
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    $(function () {
+        $("#loginBtn").click(function () {
+            var username = $("#username").val()
+            var userpwd = $("#userpwd").val()
+            if (username.trim().length < 4) {
+                layer.msg('用户名最低4位', function () {
+                });
+                return
+            }
+            if (userpwd.trim().length < 6) {
+                layer.msg('密码最低6位', function () {
+                });
+                return
+            }
+            $.post('/login', {
+                        username: username,
+                        userpwd: userpwd
+                    },
+                    function (data) {
+                        console.log(data)
+                        if (data.Status == 1) {
+                            layer.msg(data.Msg, {icon: 5});
+                        } else {
+                            layer.msg("登录成功", {icon: 6});
+                            window.location.href = "/"
+                        }
+                    }, 'json')
+        })
+    })
+</script>
+<script>
+    $(function () {
+        /*百度收录*/
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+
+        /*360收录*/
+        var qihuo = document.createElement('script');
+        if (curProtocol === 'https') {
+            qihuo.src = 'https://jspassport.ssl.qhimg.com/11.0.1.js?d33b14200fa89b7ecd3780341cd234c';
+        }
+        else {
+            qihuo.src = 'http://js.passport.qihucdn.com/11.0.1.js?d33b14200fa89b7ecd3780341cd234c4';
+        }
+        qihuo.id = "sozz"
+        var s = document.getElementsByTagName("script")[1];
+        s.parentNode.insertBefore(qihuo, s);
+    })
+</script>
+</html>

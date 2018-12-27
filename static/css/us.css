@@ -1,0 +1,9 @@
+a {
+    text-decoration: none !important;
+}
+
+.us-root{
+    display: flex;
+    margin-left: 5%;
+    font-size: 16px;
+}

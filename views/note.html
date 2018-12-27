@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content="云悦,个人随笔是一个面向IT技术人员,提供个人平时工作总结和在线记录学习笔记,个人技术博客,在线云笔记,码农笔录,最新的技术博客,www.aiprose.com">
+    <meta name="keywords"
+          content="云悦,个人随笔,博客,个人博客,个人笔记,技术博客,免费云笔记,云笔记,随笔,IT博客,谷歌地图,码农笔录,aiprose">
+    <link rel="stylesheet" href="//g.alicdn.com/sui/sui3/0.0.18/css/sui.min.css">
+{{/*<script type="text/javascript" src="//g.alicdn.com/sj/lib/jquery/dist/jquery.min.js"></script>*/}}
+    <title>我的笔记 - 云悦</title>
+    <link type="text/css" rel="styleSheet" href="/static/css/menu-reset.css"/>
+    <link type="text/css" rel="styleSheet" href="/static/css/notemenu.css"/>
+    <link type="text/css" rel="styleSheet" href="/static/css/menunav.css"/>
+    <script src="/static/js/menu.js"></script> <!-- Modernizr -->
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
+    <script src="/static/js/wangEditor.min.js"></script>
+    <style>
+        .w-e-toolbar {
+            height: 40px;
+            line-height: 30px;
+            padding-left: 45px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 1px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-track-piece {
+            background-color: rgba(0, 0, 0, 0.1);
+            -webkit-border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+<header id="slide-container">
+    <a id="cd-menu-trigger" href="javascript:void(0)"><span class="cd-menu-icon"></span></a>
+</header>
+
+<div class="cd-main-content">
+    <div id="editor" class="editor">
+    </div>
+
+    <nav class="note-nav">
+        <input type="checkbox" id="joacims-menu"/>
+        <label for="joacims-menu"><span><img src="/static/img/menu.png"
+                                             style="width: 25px;height: 25px;"> </span></label>
+        <nav>
+            <a href="javascript:void(0)" id="saveNote">保存笔记</a>
+            <a href="/" target="_blank">首页</a>
+            <a href="javascript:void(0)" id="newNote">新增笔记</a>
+            <a href="/me/note" id="newNoteColl">管理文件夹</a>
+            <a href="javascript:void(0)" id="delNote">删除笔记</a>
+            <a href="/me/blog" target="_blank">个人中心</a>
+        </nav>
+    </nav>
+</div> <!-- cd-main-content -->
+
+<nav id="cd-lateral-nav">
+{{if eq 0 (.NoteColls|len)}}
+    <ul class="cd-navigation cd-single-item-wrapper">
+        <li><a href="/me/note">新增文件夹</a></li>
+    </ul>
+{{end}}
+    <ul class="cd-navigation">
+    {{range .NoteColls}}
+        <li class="item-has-children">
+            <a href="javascript:void(0)">{{.Title}}</a>
+            <ul class="sub-menu" value="{{.Id}}">
+            {{range .Notes}}
+                <li>
+                    <a href="javascript:void(0)" onclick="noteClick({{.Id}})" value="{{.Id}}">{{.Title}}</a>
+                </li>
+            {{end}}
+            </ul>
+        </li>
+    {{end}}
+    </ul>
+</nav>
+
+<script src="/static/js/menu.js"></script> <!-- Resource jQuery -->
+<script type="text/javascript" src="/static/js/layer.js"></script>
+</body>
+<script>
+    var E = window.wangEditor
+    var editor = new E('#editor')
+    var note = null
+    editor.customConfig.uploadImgServer = '/file/upload'
+    // 或者 var editor = new E( document.getElementById('editor') )
+    editor.customConfig.uploadImgHooks = {
+        customInsert: function (insertImg, result, editor) {
+            insertImg(result.Data);
+            debugger
+        }
+    }
+    editor.create()
+    editor.txt.html("<p>点击右上角菜单新建或者选择笔记</p><p>点击左上角菜单进行新建笔记或者导航</p><span>一定要记得先新建笔记然后在编辑,ctrl+s 快捷键可以快速保存哦</span>");
+
+    document.onkeydown = keyDown;
+
+    function keyDown(e) {
+        // e.preventDefault();
+        var currKey = 0, e = e || event || window.event;
+        currKey = e.keyCode || e.which || e.charCode;
+        if (currKey == 83 && (e.ctrlKey || e.metaKey)) {
+            layer.msg("ctrl+s")
+            saveNote()
+            return false;
+        }
+
+    }
+
+    function saveNote() {
+        if (!note || !note.Id) {
+            layer.msg('请在右边菜单中选择笔记', function () {
+            });
+            return
+        }
+        var noteHtml = editor.txt.html()
+        if (!editor.txt.html() && editor.txt.html().trim().length == 0) {
+            layer.msg('保存内容为空', function () {
+            });
+            return
+        }
+        $.post('/note/edit/' + note.Id, {
+                    noteHtml: noteHtml
+                },
+                function (data) {
+                    if (data.Status == 0) {
+                        layer.msg("保存成功", {icon: 6});
+                    } else if (data.Status == 401) {
+                        window.location.href = "/login"
+                    } else {
+                        layer.msg("服务器异常", {icon: 5});
+                    }
+                }, 'json')
+    }
+
+    function noteClick(id) {
+        $.get('/note/' + id,
+                function (data) {
+                    if (!data.Status) {
+                        if (data.NoteHtml && data.NoteHtml.trim().length != 0) {
+                            editor.txt.html(data.NoteHtml);
+                        } else if (note) {
+                            editor.txt.html("");
+                        }
+                        note = data
+                    } else if (data.Status == 401) {
+                        window.location.href = "/login"
+                    } else if (data.Status == 403) {
+                        layer.msg("暂无权限", {icon: 5});
+                    } else {
+                        layer.msg("服务器异常", {icon: 5});
+                    }
+                }, 'json')
+
+    }
+
+    function addNoteCallback(obj) {
+        var subMenu = $(".sub-menu")
+        $.each(subMenu, function (index, el) {
+            if ($(el).attr("value") == obj.Pid) {
+                var child = '<li><a href="javascript:void(0)" onclick="noteClick(' + obj.Id + ')" value="' + obj.Id + '" >' + obj.Title + '</a></li>'
+                $(el).append(child)
+                if (!note || !note.Id) {
+                    note = obj
+                }
+                return
+            }
+        })
+    }
+
+    $(function () {
+        var height = document.documentElement.clientHeight
+        $(".w-e-text-container").height(height - 40 - 3);
+
+        layer.tips('文章列表点我', '#slide-container', {
+            tips: [3, '#78BA32']
+        });
+        $("#saveNote").click(function () {
+            saveNote()
+        })
+
+        $("#newNote").click(function () {
+            layer.open({
+                type: 2,
+                title: '新增笔记',
+                shadeClose: true,
+                shade: 0.8,
+                area: ['360px', '280px'],
+                content: '/iframe/note.html' //iframe的url
+            });
+        })
+
+        $("#delNote").click(function () {
+            if (!note || !note.Id) {
+                layer.msg('请在右边菜单中选择笔记', function () {
+                });
+                return
+            }
+            layer.confirm('删除确认', {
+                btn: ['确认', '手滑了'] //按钮
+            }, function () {
+                $.post('/note/del/' + note.Id,
+                        function (data) {
+                            if (data.Status == 0) {
+                                var subMenu = $(".sub-menu li a")
+                                $.each(subMenu, function (index, el) {
+                                    if ($(el).attr("value") == note.Id) {
+                                        $(el).remove()
+                                        return
+                                    }
+                                })
+                                note = null
+                                layer.msg("删除成功", {icon: 6});
+                            } else if (data.Status == 401) {
+                                window.location.href = "/login"
+                            } else if (data.Status == 403) {
+                                layer.msg("暂无权限", {icon: 5});
+                            } else {
+                                layer.msg("服务器异常", {icon: 5});
+                            }
+                        }, 'json')
+            }, function () {
+
+            });
+        })
+    })
+</script>
+</html>

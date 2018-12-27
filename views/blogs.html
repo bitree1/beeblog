@@ -1,0 +1,104 @@
+{{template "header" .}}
+    <meta name="keywords" content="云悦,个人随笔,博客,个人博客,个人笔记,技术博客,免费云笔记,云笔记,随笔,IT博客,谷歌地图,码农笔录,aiprose">
+    <title>博客列表 - 云悦</title>
+    <link type="text/css" rel="styleSheet" href="/static/css/blogs.css"/>
+</head>
+<body>
+<div class="root-container">
+{{template "nav" .}}
+    <div class="home-container">
+        <div class="home-hearder">
+            <div style="flex: 1">
+                <span>
+                    <select class="form-control input-lg" style="width: 150px;display: inline-block;height: 32px"
+                            id="selCat">
+                    {{range .Cats}}
+                        <option value="-1">选择语言</option>
+                        <option value="{{.Id}}">{{.Title}}</option>
+                    {{end}}
+                    </select>
+                </span>
+                <div class="btn-group" role="group" style="display: inline-block;margin-top: -3px">
+                    <button type="button " class="btn btn-default btn-xl {{if eq 0 .Flag}}active{{end}}">
+                        <a href="/blogs?num=1&flag=0&cat={{.Cat}}" style="color: #555;text-decoration: none;">最新</a>
+                    </button>
+                    <button type="button active" class="btn btn-default btn-xl {{if eq 1 .Flag}}active{{end}}">
+                        <a href="/blogs?num=1&flag=1&cat={{.Cat}}" style="color: #555;text-decoration: none;">最热</a>
+                    </button>
+                </div>
+            </div>
+            <button type="button" onclick="window.open('/blog/new')" class="btn btn-danger" style="border-radius: 12px">
+                写文章
+            </button>
+        </div>
+        <div>
+            <div class="home-content" style="min-height: 40px;line-height: 40px;color: #888">
+                <div class="home-content-title cursor" style="font-size: 14px">
+                    文章标题
+                </div>
+                <div style="display: inline-block;width: 260px">
+                    <div class="home-content-desc">
+                        <span style="width: 60px;font-size: 14px">类型</span>
+                        <span style="width: 60px"> 用户</span>
+                        <span style="width: 60px;font-size: 14px">浏览量</span>
+                        <span style="flex: 1;font-size: 14px">日期</span>
+                    </div>
+                </div>
+            </div>
+            <hr style="height:1px;border:none;border-top:1px solid lightgray;"/>
+        </div>
+    {{range .Page.List}}
+        <div>
+            <div class="home-content">
+                <div class="home-content-title cursor">
+                    <a href="/blog/{{.Id}}" target="_blank">{{.Title}}</a>
+                </div>
+                <div style="display: inline-block;width: 260px">
+                    <div class="home-content-desc">
+                        <span style="width: 60px;font-size: 14px">{{.CateName}}</span>
+                        <span style="width: 60px" class="cursor">{{.UserName}}</span>
+                        <span style="width: 60px;font-size: 14px">{{.Browses}}</span>
+                        <span style="flex: 1;font-size: 14px">{{.Ctime.Format "2006-01-02"}}</span>
+                    </div>
+                </div>
+            </div>
+            <hr style="height:1px;border:none;border-top:1px solid #EEE;"/>
+        </div>
+    {{end}}
+
+        <div style="text-align: center">
+            <nav>
+                <div class="pagination pagination-lg">
+                    <ul>
+                    {{if .Page.FirstPage}}
+                            {{else}}
+                        <li class="prev">
+                            <a href="/blogs?num={{ .Page.PageNo | NAdd -1}}&flag={{.Flag}}&cat={{.Cat}}">&laquo;</a>
+                        </li>
+                    {{end}}
+                        <li class="active"><a href="javascript:void(0)">{{.Page.PageNo}}</a></li>
+                    {{if .Page.LastPage}}
+                            {{else}}
+                        <li class="next">
+                            <a href="/blogs?num={{ .Page.PageNo | NAdd +1}}&flag={{.Flag}}&cat={{.Cat}}">&raquo;</a>
+                        </li>
+                    {{end}}
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+
+    {{template "footer"}}
+    </div>
+</div>
+</body>
+<script>
+    $(function () {
+        $("#selCat").val({{.Cat}})
+        $("#selCat").change(function () {
+            window.location.href = "/blogs?num=1&flag={{.Flag}}&cat=" + $("#selCat").val()
+        })
+    })
+</script>
+</html>

@@ -1,0 +1,32 @@
+.blog-root{
+    height: 100%;
+    margin: 50px 10% 0 350px;
+}
+
+.blog-info{
+    text-align: center;
+}
+
+.blog-info em{
+    padding: 0 8px !important;
+}
+
+.blog-user{
+    position: fixed;
+    top: 60px;
+    left: 20px;
+    width: 300px;
+    height: 100%;
+    background-color: #f9f9f9;
+}
+.comms-root{
+    margin: 50px 10% 0 350px;
+}
+
+.comms-root a{
+   text-decoration: none;
+}
+
+img {
+    max-width: 100% !important;
+}

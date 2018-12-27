@@ -1,0 +1,81 @@
+{{template "header" .}}
+<title>博客 - 云悦</title>
+<link type="text/css" rel="styleSheet" href="/static/css/me.css"/>
+</head>
+<body>
+<div class="root-container">
+{{template "nav" .}}
+{{template "memenu" .}}
+
+    <div class="me-blog-root">
+        <div class="me-blog-list">
+            <ol class="breadcrumb">
+                <li>个人中心</li>
+                <li>我的收藏</li>
+                <li class="active">收藏列表</li>
+            </ol>
+        {{range .Page.List}}
+            <div>
+                <p><a href="/blog/{{.BlogId}}">{{.Blog.Title}}</a></p>
+                <div>
+                    <em>收藏时间：{{.Ltime.Format "2006/01/02"}}</em>
+                    <em>浏览量：{{.Blog.Browses}}</em>
+                    <span style="width: 35px;margin-left: 30px;"><a href="javascript:void(0)" style="color: #F84822"
+                                                                    onclick="del(this,{{.BlogId}})">删除</a></span>
+                </div>
+                <hr style="height:1px;border:none;border-top:1px solid #EEE;margin: 6px;"/>
+            </div>
+        {{end}}
+            <div style="text-align: center">
+                <nav>
+                    <div class="pagination pagination-lg">
+                        <ul>
+                        {{if .Page.FirstPage}}
+                            {{else}}
+                            <li class="prev">
+                                <a href="/me/blog?num={{ .Page.PageNo | NAdd -1}}&flag={{.Flag}}">&laquo;</a>
+                            </li>
+                        {{end}}
+                            <li class="active"><a href="javascript:void(0)">{{.Page.PageNo}}</a></li>
+                        {{if .Page.LastPage}}
+                            {{else}}
+                            <li class="next">
+                                <a href="/me/blog?num={{ .Page.PageNo | NAdd +1}}&flag={{.Flag}}">&raquo;</a>
+                            </li>
+                        {{end}}
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="me-blog-footer">
+        {{template "footer"}}
+        </div>
+    </div>
+</div>
+</div>
+</body>
+<script>
+    function del(obj, id) {
+        layer.confirm('删除后将无法恢复', {
+            btn: ['确认', '手滑了'] //按钮
+        }, function () {
+            $.get('/unlike/' + id,
+                    function (data) {
+                        if (data.Status == 0) {
+                            $(obj).parent().parent().parent().remove()
+                            layer.msg("删除成功", {icon: 6});
+                        } else if (data.Status == 401) {
+                            window.location.href = "/login"
+                        } else if (data.Status == 403) {
+                            layer.msg("暂无权限", {icon: 5});
+                        } else {
+                            layer.msg("服务器异常", {icon: 5});
+                        }
+                    }, 'json')
+        }, function () {
+
+        });
+    }
+</script>
+</html>

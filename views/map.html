@@ -1,0 +1,82 @@
+{{template "header" .}}
+<meta name="keywords" content="云悦,个人随笔,博客,个人博客,个人笔记,技术博客,免费云笔记,云笔记,随笔,IT博客,谷歌地图,码农笔录,aiprose">
+<title>谷歌影像图 - 云悦</title>
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.10&key=74c9586333eaf8d6191c576cf59739fa"></script>
+<script src="https://webapi.amap.com/ui/1.0/main.js"></script>
+<link type="text/css" rel="styleSheet" href="/static/css/map.css" />
+</head>
+<body>
+{{template "nav" .}}
+<div class="map-root">
+    <div id="map-container" class="map-container"></div>
+</div>
+</body>
+<script>
+    var googleLayerimage = new AMap.TileLayer({
+        getTileUrl: 'https://mt{1,2,3,0}.google.cn/maps/vt?lyrs=s@194&hl=zh-CN&gl=cn&x=[x]&y=[y]&z=[z]',
+        zIndex: 2
+    })
+    var googleLayervector = new AMap.TileLayer()
+
+    // var roadNet = new AMap.TileLayer.RoadNet()
+    var mapObj = new AMap.Map('map-container', {
+        layers: [googleLayervector, googleLayerimage],
+        center: [108.963148, 34.232709],
+        zoom: 11
+    })
+
+    var marker = new AMap.Marker({
+        position: new AMap.LngLat(108.963148, 34.232709),
+        map: mapObj
+    })
+
+    AMap.event.addListener(marker, 'click', function () {
+        AMapUI.loadUI(['overlay/SimpleInfoWindow'], function (SimpleInfoWindow) {
+            var infoWindow = new SimpleInfoWindow({
+                infoTitle: '<strong>我的位置</strong>',
+                infoBody: '<p>我在这里、看我</p>',
+                offset: new AMap.Pixel(0, -30),
+                autoMove: true
+            })
+            infoWindow.open(mapObj, e.target.getPosition())
+        })
+    })
+
+
+    AMapUI.loadUI(['overlay/SimpleInfoWindow'], function (SimpleInfoWindow) {
+        var infoWindow = new SimpleInfoWindow({
+            infoTitle: '<strong>我的位置</strong>',
+            infoBody: '<p>我在这里、看我</p>',
+            offset: new AMap.Pixel(0, -30),
+            autoMove: true
+        })
+        infoWindow.open(mapObj, new AMap.LngLat(108.963148, 34.232709))
+    })
+    $(function () {
+        /*百度收录*/
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+
+        /*360收录*/
+        var qihuo = document.createElement('script');
+        if (curProtocol === 'https') {
+            qihuo.src = 'https://jspassport.ssl.qhimg.com/11.0.1.js?d33b14200fa89b7ecd3780341cd234c';
+        }
+        else {
+            qihuo.src = 'http://js.passport.qihucdn.com/11.0.1.js?d33b14200fa89b7ecd3780341cd234c4';
+        }
+        qihuo.id = "sozz"
+        var s = document.getElementsByTagName("script")[1];
+        s.parentNode.insertBefore(qihuo, s);
+    })
+</script>
+</html>

@@ -1,0 +1,68 @@
+{{template "header" .}}
+<meta name="keywords" content="云悦,个人随笔,博客,个人博客,个人笔记,技术博客,免费云笔记,云笔记,随笔,IT博客,谷歌地图,码农笔录,aiprose">
+<title>注册 - 云悦</title>
+<link type="text/css" rel="styleSheet" href="/static/css/login.css"/>
+</head>
+<body>
+<div class="root-container">
+{{template "nav" .}}
+    <div class="login-root">
+        <div class="input-container">
+            <div class="input-root">
+                <p>注册</p>
+                <div class="inputs-class">
+                    <div class="input-group input-group-lg input-class">
+                        <span class="input-group-addon" id="sizing-addon1">用户</span>
+                        <input type="text" class="form-control" placeholder="请输入用户名" id="username"
+                               aria-describedby="sizing-addon1">
+                    </div>
+                    <div class="input-group input-group-lg input-class">
+                        <span class="input-group-addon" id="sizing-addon1">密码</span>
+                        <input type="password" class="form-control" placeholder="请输入密码" id="userpwd"
+                               aria-describedby="sizing-addon1">
+                    </div>
+                    <button type="button" class="btn btn-primary btn-lg btn-bordered btn-block" id="loginBtn">注册
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="login-footer">
+        {{template "footer"}}
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    $(function () {
+        $("#loginBtn").click(function () {
+            var username = $("#username").val()
+            var userpwd = $("#userpwd").val()
+            if (username.trim().length < 4) {
+                layer.msg('用户名最低4位', function () {
+                });
+                return
+            }
+            if (userpwd.trim().length < 6) {
+                layer.msg('密码最低6位', function () {
+                });
+                return
+            }
+            $.post('/regist', {
+                        username: username,
+                        userpwd: userpwd
+                    },
+                    function (data) {
+                        console.log(data)
+                        if (data.Status == 1) {
+                            layer.msg(data.Msg, {icon: 5});
+                        } else {
+                            layer.msg("注册成功,现在去登陆哦", {icon: 6});
+                            setTimeout(function () {
+                                window.location.href = "/login"
+                            }, 800)
+                        }
+                    }, 'json')
+        })
+    })
+</script>
+</html>
