@@ -28,3 +28,6 @@ beego:1.7.2 [beego官网](beego官网)
 * go get github.com/olivere/elastic 
 
 * windows环境需要安装gcc  [gcc下载地址](http://tdm-gcc.tdragon.net/download) 
+
+
+<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=034f70ab5b0b5fda878416c5ea0b115155040180d26910143af96415f3280f14"><img border="0" src="https://pub.idqqimg.com/wpa/images/group.png" alt="go/golang/beego`club" title="go/golang/beego`club"></a>
